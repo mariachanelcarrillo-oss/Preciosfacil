@@ -63,6 +63,7 @@ NAME_KEY = "gramaje_recipe_name"
 UNITS_KEY = "gramaje_units_per_batch"
 NOTES_KEY = "gramaje_recipe_notes"
 ING_TABLE_KEY = "gramaje_editor_table"
+ING_WIDGET_KEY = "gramaje_editor_table_widget"
 ACTIVE_ID_KEY = "gramaje_active_recipe_id"
 SELECTOR_KEY = "gramaje_recipe_selector"
 UNIDADES_PEDIDO_KEY = "gramaje_unidades_pedido"
@@ -306,7 +307,7 @@ def render_recipe_admin(recipes: list[dict]) -> dict:
 
         ingredientes_df = st.data_editor(
             st.session_state[ING_TABLE_KEY],
-            key=ING_TABLE_KEY,
+            key=ING_WIDGET_KEY,
             num_rows="dynamic",
             use_container_width=True,
             column_config={
@@ -322,6 +323,8 @@ def render_recipe_admin(recipes: list[dict]) -> dict:
             },
             hide_index=True,
         )
+        # Sincroniza el dataframe editable con el estado de la pagina sin pisar la clave del widget.
+        st.session_state[ING_TABLE_KEY] = ingredientes_df
 
         buttons_col, delete_col = st.columns([3, 1])
         with buttons_col:
