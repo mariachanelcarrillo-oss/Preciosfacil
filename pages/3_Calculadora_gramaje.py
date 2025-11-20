@@ -735,7 +735,7 @@ def render_ai_block(
     client = genai.Client(api_key=api_key)  # type: ignore[call-arg]
     with st.spinner("Analizando recetas con Gemini..."):
         try:
-            response = client.responses.generate(
+            response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=[{"role": "user", "parts": [{"text": prompt}]}],
             )
@@ -743,15 +743,14 @@ def render_ai_block(
             st.sidebar.error(f"No pude ejecutar Gemini: {exc}")
             return
 
-    ai_text = getattr(response, "output_text", None)
+    ai_text = getattr(response, "text", None) or getattr(response, "output_text", None)
     if not ai_text:
         candidates = getattr(response, "candidates", [])
         fragments = []
         for candidate in candidates:
             content = getattr(candidate, "content", None)
-            if not content:
-                continue
-            for part in getattr(content, "parts", []):
+            parts = getattr(content, "parts", []) if content else []
+            for part in parts:
                 text = getattr(part, "text", "")
                 if text:
                     fragments.append(text)
